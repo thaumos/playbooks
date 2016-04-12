@@ -7,13 +7,14 @@
     region: us-west-2
     count: 1
     env: Production
+    ami: ami-5189a661
 
   tasks:
   - name: Launch!
     ec2:
       keypair: dsilva
       group: dsilva-demo
-      image: ami-5189a661
+      image: {{ ami }}
       type: t2.micro
       region: "{{ region }}"
       instance_tags:
