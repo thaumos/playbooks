@@ -14,7 +14,7 @@
     ec2:
       keypair: dsilva
       group: dsilva-demo
-      image: {{ ami }}
+      image: "{{ ami }}"
       type: t2.micro
       region: "{{ region }}"
       instance_tags:
