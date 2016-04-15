@@ -19,7 +19,7 @@
       type: "{{ type }}"
       region: "{{ region }}"
       instance_tags:
-          Name: "dsilva-demo"
+          Name: "thaumos"
           env: "{{ env }}"
       count: "{{ count }}"
       wait: true
