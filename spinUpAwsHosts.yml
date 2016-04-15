@@ -4,21 +4,22 @@
   gather_facts: false
 
   vars:
-    region: us-west-2
+    region: us-west-1
     count: 1
     env: Production
-    ami: ami-5189a661
+    ami: ami-af4333cf #Centos 7 ami
+    type: t2.micro
 
   tasks:
   - name: Launch!
     ec2:
       keypair: dsilva
-      group: dsilva-demo
+      group: thaumos
       image: "{{ ami }}"
-      type: t2.micro
+      type: "{{ type }}"
       region: "{{ region }}"
       instance_tags:
-          Name: "dsilva_demo"
+          Name: "dsilva-demo"
           env: "{{ env }}"
       count: "{{ count }}"
       wait: true
