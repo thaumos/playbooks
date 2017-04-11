@@ -13,7 +13,7 @@
   tasks:
   - name: Launch!
     ec2:
-      keypair: dsilva
+      keypair: thaumos
       group: thaumos
       image: "{{ ami }}"
       type: "{{ type }}"
