@@ -1,0 +1,19 @@
+- name: Cloudformation test
+  hosts: localhost
+  gather_facts: false
+  tasks:
+  
+  - name: launch ansible cloudformation example
+    cloudformation:
+      stack_name: "thaumos-cloudformation"
+      state: "present"
+      region: "us-west-2"
+      disable_rollback: true
+      template: "templates/basic_vpc.yml"
+      # template_parameters:
+      #   KeyName: "thaumos"
+      #   DiskType: "ephemeral"
+      #   InstanceType: "m1.small"
+      #   ClusterSize: 3
+      tags:
+        Stack: "thaumos-cloudformation"
