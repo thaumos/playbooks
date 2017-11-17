@@ -1,0 +1,10 @@
+- name: Cloudformation destroy
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+  - name: launch ansible cloudformation example
+    cloudformation:
+      stack_name: "thaumos-cloudformation"
+      state: "absent"
+      region: us-west-2

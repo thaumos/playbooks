@@ -1,0 +1,158 @@
+Outputs:
+  SubnetA:
+    Value:
+      Ref: SubnetA
+  SubnetB:
+    Value:
+      Ref: SubnetB
+  SubnetC:
+    Value:
+      Ref: SubnetC
+  VpcId:
+    Value:
+      Ref: VPC
+  WebSecurityGroup:
+    Value:
+      Ref: WebServerSG
+Parameters:
+  Component:
+    Default: test
+    Description: A prefix to put on resources to make it easier to tell what a VPC
+      is for
+    Type: String
+  RangePrefix:
+    Default: '172.16'
+    Description: Prefix for IP range, between 172.16 and 172.31, for the VPC subnets.
+      Will be built as a 16-bit block with 3 24-bit subnets
+    Type: String
+Resources:
+  AttachGateway:
+    Properties:
+      InternetGatewayId:
+        Ref: IGW
+      VpcId:
+        Ref: VPC
+    Type: AWS::EC2::VPCGatewayAttachment
+  DefaultRoute:
+    DependsOn:
+    - RouteTable
+    - IGW
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: IGW
+      RouteTableId:
+        Ref: RouteTable
+    Type: AWS::EC2::Route
+  DefaultSG:
+    Properties:
+      GroupDescription: Base access rules allowing SSH
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: '22'
+        IpProtocol: tcp
+        ToPort: '22'
+      VpcId:
+        Ref: VPC
+    Type: AWS::EC2::SecurityGroup
+  IGW:
+    Properties:
+      Tags:
+      - Key: Name
+        Value:
+          Fn::Sub: ${Component}-vpc-gateway
+    Type: AWS::EC2::InternetGateway
+  RTA1:
+    Properties:
+      RouteTableId:
+        Ref: RouteTable
+      SubnetId:
+        Ref: SubnetA
+    Type: AWS::EC2::SubnetRouteTableAssociation
+  RTA2:
+    Properties:
+      RouteTableId:
+        Ref: RouteTable
+      SubnetId:
+        Ref: SubnetB
+    Type: AWS::EC2::SubnetRouteTableAssociation
+  RTA3:
+    Properties:
+      RouteTableId:
+        Ref: RouteTable
+      SubnetId:
+        Ref: SubnetC
+    Type: AWS::EC2::SubnetRouteTableAssociation
+  RouteTable:
+    Properties:
+      VpcId:
+        Ref: VPC
+    Type: AWS::EC2::RouteTable
+  SubnetA:
+    Properties:
+      AvailabilityZone:
+        Fn::Sub: ${AWS::Region}a
+      CidrBlock:
+        Fn::Sub: ${RangePrefix}.10.0/24
+      Tags:
+      - Key: Name
+        Value:
+          Fn::Sub: ${Component}-sub-a
+      VpcId:
+        Ref: VPC
+    Type: AWS::EC2::Subnet
+  SubnetB:
+    Properties:
+      AvailabilityZone:
+        Fn::Sub: ${AWS::Region}b
+      CidrBlock:
+        Fn::Sub: ${RangePrefix}.11.0/24
+      Tags:
+      - Key: Name
+        Value:
+          Fn::Sub: ${Component}-sub-b
+      VpcId:
+        Ref: VPC
+    Type: AWS::EC2::Subnet
+  SubnetC:
+    Properties:
+      AvailabilityZone:
+        Fn::Sub: ${AWS::Region}c
+      CidrBlock:
+        Fn::Sub: ${RangePrefix}.12.0/24
+      Tags:
+      - Key: Name
+        Value:
+          Fn::Sub: ${Component}-sub-c
+      VpcId:
+        Ref: VPC
+    Type: AWS::EC2::Subnet
+  VPC:
+    Properties:
+      CidrBlock:
+        Fn::Sub: ${RangePrefix}.0.0/16
+      EnableDnsHostnames: true
+      Tags:
+      - Key: Name
+        Value:
+          Fn::Sub: ${Component}-vpc
+    Type: AWS::EC2::VPC
+  WebServerSG:
+    Properties:
+      GroupDescription: web server access rules
+      SecurityGroupIngress:
+      - CidrIp: 0.0.0.0/0
+        FromPort: '22'
+        IpProtocol: tcp
+        ToPort: '22'
+      - CidrIp: 0.0.0.0/0
+        FromPort: '80'
+        IpProtocol: tcp
+        ToPort: '80'
+      - CidrIp: 0.0.0.0/0
+        FromPort: '443'
+        IpProtocol: tcp
+        ToPort: '443'
+      VpcId:
+        Ref: VPC
+    Type: AWS::EC2::SecurityGroup
