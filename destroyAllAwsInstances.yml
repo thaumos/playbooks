@@ -1,30 +1,26 @@
 ---
 - name: Gather EC2 facts
-  hosts: "{{ ec2_hosts }}"
+  hosts: localhost
   gather_facts: false
 
   vars:
     ec2_region: us-west-2
-    ec2_hosts: tag_Name_dsilva_demo
 
   tasks:
   - name: Gather EC2 facts
-    ec2_facts:
-
-- name: Terminate EC2 hosts
-  hosts: localhost
-  gather_facts: false
-  connection: local
-
-  vars:
-    ec2_hosts: tag_Name_dsilva_demo
-    ec2_region: us-west-2
-
-  tasks:
-  - name: Terminate EC2 hosts
-    ec2:
+    ec2_instance_facts:
       region: "{{ ec2_region }}"
-      instance_tags:
-        Name: dsilva_demo
+      filters: 
+        key-name: thaumos
+        instance-state: running
+    register: ec2
+
+  # - name: Output facts
+  #   debug:
+  #     var: ec2
+  - name: Terminate instances
+    ec2:
       state: absent
-      wait: True
+      region: "{{ ec2_region }}"
+      instance_ids: "{{ item.instance_id }}"
+    with_items: "{{ ec2.instances }}"
